@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-4">
+		<div class="card mb-4">
+			<div class="card-body">
+				<h5>Search</h5>
+				<form method="get">
+					{{ form.keyword }}
+					<div class="mt-2">{{ form.category }}</div>
+					<button class="btn btn-primary mt-3" type="submit">Filter</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<h4>Available Jobs</h4>
+		{% for job in jobs %}
+			<div class="card mb-3 job-card">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<div>
+							<div class="job-title">{{ job.title }}</div>
+							<div class="muted">{{ job.employer.company_name }} • {{ job.category }}</div>
+						</div>
+						<div class="text-right">
+							{% if job.id in applied_jobs %}
+								<span class="badge badge-success">Applied</span>
+							{% else %}
+								<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="job_id" value="{{ job.id }}"><button class="btn btn-outline-primary">Apply</button></form>
+							{% endif %}
+						</div>
+					</div>
+					<p class="mt-2">{{ job.job_description|truncatechars:150 }}</p>
+					<div><small class="muted">Skills: {{ job.skills_required }}</small></div>
+				</div>
+			</div>
+		{% empty %}
+			<p>No jobs found.</p>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w3-container">
+    <h2>Skill Matching Dashboard</h2>
+
+    {% if user_type == 'job_seeker' %}
+        <h4>Jobs Matching Your Skills</h4>
+        {% if matched_jobs %}
+            <div class="w3-row">
+                {% for match in matched_jobs %}
+                    <div class="w3-col m6">
+                        <div class="w3-card-4 w3-margin-bottom w3-white job-card">
+                            <div class="w3-container w3-padding">
+                                <h5 class="job-title">{{ match.job.title }}</h5>
+                                <p>{{ match.job.job_description|truncatechars:120 }}</p>
+                                <p><strong>Match:</strong> <span class="match-pill">{{ match.match_percentage }}%</span></p>
+                                <div class="match-bar-wrap" aria-hidden="true">
+                                    <div class="match-bar" style="width: {{ match.match_percentage }}%"></div>
+                                </div>
+                                <p class="muted"><strong>Skills:</strong> {{ match.matched_skills|join:", " }}</p>
+                                <p class="muted">{{ match.job.employer.company_name }} • {{ match.job.employer.company_location }}</p>
+                                <a href="{% url 'job_search' %}" class="w3-btn w3-blue">View Details</a>
+                                <form method="post" action="{% url 'job_search' %}" style="display:inline-block; margin-left:8px">{% csrf_token %}
+                                    <input type="hidden" name="job_id" value="{{ match.job.id }}">
+                                    <button type="submit" class="w3-btn w3-green">Apply</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No jobs match your skills at this time.</p>
+        {% endif %}
+
+    {% elif user_type == 'employer' %}
+        <h4>Candidates Matching Your Job Postings</h4>
+        {% if matched_candidates %}
+            <div class="w3-row">
+                {% for match in matched_candidates %}
+                    <div class="w3-col m6">
+                        <div class="w3-card-4 w3-margin-bottom w3-white">
+                            <div class="w3-container w3-padding d-flex align-items-center">
+                                {% if match.candidate.photo %}
+                                    <img src="{{ match.candidate.photo.url }}" alt="{{ match.candidate.user_profile.user.username }}" class="w3-circle" style="width:60px;height:60px;object-fit:cover;margin-right:12px">
+                                {% endif %}
+                                <div>
+                                  <h5>{{ match.candidate.user_profile.user.username }}</h5>
+                                  <p><strong>Job:</strong> {{ match.job.title }}</p>
+                                <p><strong>Match:</strong> <span class="match-pill">{{ match.match_percentage }}%</span></p>
+                                <p class="muted"><strong>Matched Skills:</strong> {{ match.matched_skills|join:", " }}</p>
+                                <p class="muted"><strong>Candidate Skills:</strong> {{ match.candidate.skills }}</p>
+                                {% if match.candidate.resume %}
+                                    <a href="{{ match.candidate.resume.url }}" class="w3-btn w3-grey" target="_blank">View Resume</a>
+                                {% endif %}
+                                {% if match.candidate.user_profile.user.email %}
+                                    <a href="mailto:{{ match.candidate.user_profile.user.email }}?subject=Regarding%20your%20application%20for%20{{ match.job.title|urlencode }}" class="w3-btn w3-blue">Contact Candidate</a>
+                                {% else %}
+                                    <a href="#" class="w3-btn w3-blue">Contact Candidate</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No candidates match your job postings at this time.</p>
+        {% endif %}
+
+    {% endif %}
+</div>
+{% endblock %}

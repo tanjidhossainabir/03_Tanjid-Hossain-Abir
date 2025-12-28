@@ -1,0 +1,36 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-5">
+		<div class="card">
+			<div class="card-body">
+				<h3 class="mb-3">Login</h3>
+				{% if messages %}
+					<div class="alert alert-info">
+						{% for message in messages %}{{ message }}{% endfor %}
+					</div>
+				{% endif %}
+
+				<form method="post" novalidate>
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="id_username">Username</label>
+						<input type="text" name="username" id="id_username" class="form-control" required autofocus>
+					</div>
+					<div class="form-group">
+						<label for="id_password">Password</label>
+						<input type="password" name="password" id="id_password" class="form-control" required>
+					</div>
+					<button class="btn btn-primary btn-block" type="submit">Log in</button>
+				</form>
+
+				<div class="text-center mt-3 muted">
+					Don't have an account? <a href="{% url 'register' %}">Register</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

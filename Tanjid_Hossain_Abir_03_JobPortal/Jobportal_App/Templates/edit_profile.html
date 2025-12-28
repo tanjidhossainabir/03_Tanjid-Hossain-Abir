@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="w3-card-4 w3-white p-3">
+  <div class="w3-container w3-blue">
+    <h3>{{ user_type|title }} Profile</h3>
+  </div>
+  <div class="w3-container mt-3">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {% if user_type == 'job_seeker' and form.instance %}
+        {% if form.instance.photo %}
+          <p>Current photo:</p>
+          <p><img src="{{ form.instance.photo.url }}" alt="Profile photo" class="w3-image w3-round" style="max-width:150px; height:auto;"></p>
+        {% endif %}
+        {% if form.instance.resume %}
+          <p>Current resume: <a href="{{ form.instance.resume.url }}" target="_blank">Download</a></p>
+        {% endif %}
+      {% endif %}
+      <button class="w3-btn w3-blue">Save Profile</button>
+      <a href="{% url 'home' %}" class="w3-btn w3-grey">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
